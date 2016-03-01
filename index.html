@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Charlotte's Cool Quad Grapher</title>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+	<style type="text/css">
+	html, body {
+		margin: 0px;
+	}
+	canvas {
+		display: block;
+	}
+
+	/*David's cool css file for the soft dev class 2016 winter*/
+
+#wrapper {
+	width: 1200px;
+	margin:auto;
+	background-color: #DDDDDD;
+	height:1200px;
+}
+
+#cubicwrapper {
+	margin-left:360px;
+}
+
+header {
+	width: 1000px;
+	top: 30px;
+	box-shadow: 10px 10px 10px black;
+	margin-left: auto;
+	margin-right: auto;
+	background-color: #42C3C8;
+	text-align: center;
+	color: black;
+	border-radius:5px;
+	font-size:30px;
+}
+
+#mycanvas {
+	margin-left:450px;
+	margin-top:40px;
+	border-style:solid;
+	border-width:20px;
+	border-radius:50px;
+	background-color:#7647A2;
+}
+
+#plotyintbutton {
+	background-color:#42C3C8;
+	border-radius:10px;
+	border-color:#42C3C8;
+}
+
+#plotxintbutton {
+	background-color:#999999;
+	border-radius:10px;
+	border-color:#999999;
+}
+
+#answerbutton {
+	background-color:white;
+	border-radius:10px;
+	border-color:white;
+}
+
+#symlinebutton {
+	background-color:#556677;
+	border-radius:10px;
+	border-color:#556677;
+}
+
+#gridbutton {
+	background-color:#5566AA;
+	border-radius:10px;
+	border-color:#5566AA;
+}
+
+#submitvalues {
+	background-color:#999999;
+	border-radius:10px;
+	border-color:#999999;
+}
+
+#vertexbutton {
+	background-color:gray;
+	border-radius:10px;
+	border-color:gray;
+}
+
+#clear {
+	background-color:#AA8CC5;
+	border-radius:10px;
+	border-color:#AA8CC5;
+}
+
+#coeff {
+	margin-top: 40px;
+	margin-left:5%;
+	float: left;
+	width: 300px;
+	position: absolute;
+	background-color: #AA8CC5;
+	padding: 10px;
+	border-radius: 20px;
+	color:black;
+	font-size:15px;
+}
+
+#clear {
+margin-left:450px;
+}
+
+#answers {
+	margin-left: 5%;
+	margin-top: 280px;
+	float: left;
+	width: 300px;
+	background-color: #999999;
+	position: absolute;
+	padding: 10px;
+	color:black;
+	border-radius:20px;
+	font-size:20px;
+}
+
+#cubicanswers {
+	margin-left: 5%;
+	margin-top: 250px;
+	float: left;
+	width: 300px;
+	background-color: #999999;
+	position: absolute;
+	padding: 10px;
+	color:black;
+	border-radius:20px;
+	font-size:20px;
+}
+	</style>
+</head>
+<script type="text/javascript">
+	//Javascript for drawing and calculating quadratics.
+var a,b,c,d,context,w,h,symline,k=20;
+
+function QF() {
+// getting values to do quadratic formula
+a = $("#quadA").val();
+b = $("#linB").val();
+c = $("#constant").val();
+solutions();
+results();
+graphQuad();
+}
+
+function cubicQF() {
+// getting values to do quadratic formula
+a = $("#quadA").val();
+b = $("#linB").val();
+c = $("#constant").val();
+d = $("#constantcubic").val();
+cubicgraphQuad();
+cubicsolutions();
+}
+
+function  cubicinit() {
+	canvas=document.getElementById("mycanvas");
+	context=canvas.getContext("2d");
+	w=canvas.width=600;
+	h=canvas.height=400;
+	$("#cubicanswers").hide();
+	grid();
+}
+
+function  init() {
+	canvas=document.getElementById("mycanvas");
+	context=canvas.getContext("2d");
+	w=canvas.width=600;
+	h=canvas.height=400;
+	$("#answers").hide();
+	$("#cubicanswers").hide();
+	grid();
+}
+
+function cubicsubmitandreset() {
+	cubicinit();
+	cubicQF();
+}
+
+function submitandreset() {
+	init();
+	QF();
+}
+
+function  init2() {
+	canvas=document.getElementById("mycanvas");
+	context=canvas.getContext("2d");
+	w=canvas.width=600;
+	h=canvas.height=400;
+	grid();
+	QF();
+}
+
+function symLine() {
+
+context.lineWidth = 2;
+context.strokeStyle = "#556677";
+context.setLineDash([2,3]);
+context.beginPath();
+context.moveTo(w/2+vX*k,0);
+context.lineTo(w/2+vX*k,h);
+context.stroke();
+var symline=true;
+}
+
+function vertex() {
+vX = -(b*1)/(2*a);
+vY = a*Math.pow(vX,2)+b*vX+c*1;
+context.lineWidth = 2;
+context.strokeStyle = "gray";
+context.setLineDash([1,0]);
+context.beginPath();
+context.arc(vX*(k)+(w/2),-vY*(k)+(h/2),7,0,2*Math.PI);
+context.stroke();
+}
+
+function plotyint() {
+	context.beginPath();
+	context.setLineDash([1,0]);
+	context.strokeStyle = "#42C3C8";
+	context.arc(w/2,h/2-c*k,2,0,2*Math.PI);
+	context.stroke();
+}
+
+function cubicplotyint() {
+	context.beginPath();
+	context.setLineDash([1,0]);
+	context.strokeStyle = "#42C3C8";
+	context.arc(w/2,h/2-d*k,2,0,2*Math.PI);
+	context.stroke();
+}
+
+function plotxint() {
+	context.beginPath();
+	context.setLineDash([1,0]);
+	context.arc(w/2+x1*k,h/2,5,0,2*Math.PI);
+	context.strokeStyle = "white";
+	context.stroke();
+	context.beginPath();
+	context.strokeStyle = "white";
+	context.arc(w/2+x2*k,h/2,5,0,2*Math.PI);
+	context.stroke();
+	
+}
+
+function newGraph() {
+	k=20;
+	init();
+}
+
+function xsGrid() {
+	k=5;
+	init2();
+}
+
+function smallGrid() {
+	k=10;
+	init2();
+}
+
+function mediumGrid() {
+	k=20;
+	init2();
+}
+
+function largeGrid() {
+	k=50;
+	init2();
+}
+
+function xlGrid() {
+	k=100;
+	init2();
+}
+
+function graphQuad () {
+	for (var i = 0; i < w; i++) {
+		x = (w/2-i)/k;
+		y = c*1+b*x+a*Math.pow(x,2);
+		nx =(w/2-(i+1))/k;
+		ny = c*1+b*nx+a*Math.pow(nx,2);
+		context.beginPath();
+		context.setLineDash([1,0]);
+		context.lineWidth = 2;
+		context.strokeStyle = "black";
+		context.moveTo(w/2+x*k, h/2-y*k);
+		context.lineTo(w/2+nx*k, h/2-ny*k);
+		context.stroke();
+	}
+}
+
+function cubicgraphQuad () {
+	for (var i = 0; i < w; i++) {
+		x = (w/2-i)/k;
+		y = d*1+c*x+b*Math.pow(x,2)+a*Math.pow(x,3);
+		nx =(w/2-(i+1))/k;
+		ny = d*1+c*nx+b*Math.pow(nx,2)+a*Math.pow(nx,3);
+		context.beginPath();
+		context.setLineDash([1,0]);
+		context.lineWidth = 2;
+		context.strokeStyle = "black";
+		context.moveTo(w/2+x*k, h/2-y*k);
+		context.lineTo(w/2+nx*k, h/2-ny*k);
+		context.stroke();
+	}
+}
+
+function results () {
+// finding vertex and displaying axis of symmetry and y intercept results
+vX = -(b*1)/(2*a);
+vY = a*Math.pow(vX,2)+b*vX+c*1;
+
+$(".vertex").text("The vertex is at (" + vX+","+vY+")");
+}
+
+function cubicresults () {
+// finding vertex and displaying axis of symmetry and y intercept results
+vX = -(b*1)/(2*a);
+vY = a*Math.pow(vX,2)+b*vX+c*1;
+
+$(".vertex").text("The vertex is at (" + vX+","+vY+")");
+}
+
+function solutions () {
+	$("#answers").hide();
+	$("#answers").fadeIn(1500);
+	vX = -(b*1)/(2*a);
+	vY = a*Math.pow(vX,2)+b*vX+c*1;
+	D = Math.pow(b,2)-4*a*c;
+	x1 = vX + Math.sqrt(D)/(2*a)
+	x2 = vX - Math.sqrt(D)/(2*a)
+	$("#discriminant").text("The discriminant is "+D);
+	$("#axis").text("The axis of symmetry is at x="+vX);
+	$("#yint").text("The y intercept is "+c);
+
+	if (D<0) {
+		$(".zeroes").text("Too bad there are no real zeroes");
+		$("#answerbutton").hide();
+	}
+	else {
+		if (D>0) {
+			$(".zeroes").text("The zeroes are at x="+x1+" and x="+x2);
+			$("#answerbutton").fadeIn(1500);
+		}
+		else {
+			$(".zeroes").text("There are two identical zeroes at x="+x1);
+			$("#answerbutton").fadeIn(1500);
+		}
+	}
+}
+
+function cubicsolutions () {
+	$("#cubicanswers").hide();
+	$("#cubicanswers").fadeIn(1500);
+	$("#yint").text("The y intercept is "+d);
+}
+
+function grid() {
+//using the direct variation constant k, we make a grid.
+context.lineWidth=1;
+context.strokeStyle="rgba(0,0,0,.4)";
+for (var i=0; i<w/k; i++) {
+	context.beginPath();
+	context.moveTo(k*(i+1),0);
+	context.lineTo(k*(i+1),h);
+	context.stroke();
+}
+for (var i=0; i<h/k; i++) {
+	context.beginPath();
+	context.moveTo(0,k*(i+1));
+	context.lineTo(w,k*(i+1));
+	context.stroke();
+}
+
+// x and y axis
+context.lineWidth=3;
+context.strokeStyle="rgba(0,0,0,.9)";
+
+// now draw the axis yourself
+//x axis.
+context.beginPath();
+context.moveTo(0,(h/2));
+context.lineTo(w,(h/2));
+context.stroke();
+
+//y axis.
+context.moveTo((w/2),0);
+context.lineTo((w/2),h);
+context.stroke();
+
+//The "0" at the center/the face that is secret.
+
+//context.lineWidth=2;
+//context.strokeStyle="rgba(0,0,0,.9)";
+
+//context.moveTo(295,205);
+//context.arc(290,210,5,2*Math.PI,0*Math.PI);
+//context.stroke();
+
+//context.moveTo(280,205);
+//context.arc(275,210,5,2*Math.PI,0*Math.PI);
+//context.stroke();
+
+//context.moveTo(283,215);
+//context.lineTo(283,220);
+//context.stroke();
+
+//context.lineWidth=.2;
+//context.strokeStyle="rgba(0,0,0,.9)";
+
+//context.moveTo(295,247.5);
+//context.arc(282.5,235,12.5,2*Math.PI,0*Math.PI);
+//context.stroke();
+
+}
+
+//My name that I made.
+function myname() {
+context=document.getElementById("mycanvas");
+context=context.getContext("2d");
+context.lineWidth=10;
+context.beginPath();
+context.moveTo(110,128);
+context.arc(80,80,60,(1*Math.PI)/3,(5*Math.PI)/3);
+context.stroke();
+context.moveTo(130,20);
+context.lineTo(130,120);
+context.stroke();
+context.moveTo(130,120);
+context.arc(130,120,50,(3*Math.PI)/2,2*Math.PI);
+context.stroke();
+context.moveTo(230,130);
+context.arc(230,100,30,(1*Math.PI)/2,(3*Math.PI)/2);
+context.stroke();
+context.moveTo(230,60);
+context.lineTo(230,140);
+context.stroke();
+context.moveTo(230,140);
+context.lineTo(240,140);
+context.stroke();
+context.moveTo(250,60);
+context.lineTo(250,140);
+context.stroke();
+context.moveTo(250,70);
+context.arc(250,110,40,(3*Math.PI)/2,(11*Math.PI)/6);
+context.stroke();
+}
+</script>
+<body onload="init()">
+	<div id="wrapper">
+		<header>Charlotte's Quad and Cubic Grapher</header>
+		<div id="coeff">
+			<h3> Quadratic Grapher </h3>
+			<p class="formInfo">Enter your coefficients here:<br><br>
+				a = <input size="10" type="text" id="quadA" value="1"> <br>
+				b = <input size="10" type="text" id="linB" value="0"> <br>
+				c = <input size="10" type="text" id="constant" value="0"> <br>
+				<br>
+				<button id="submitvalues" onclick="QF()">Submit Values</button>
+				<button id="submitvalues" onclick="submitandreset()">Reset Grid and Submit Values</button>
+			</p>
+		</div>
+		<div id="answers">	
+			<p class="vertex"></p>
+				<button id="vertexbutton" onclick="vertex()">Display Vertex</button>
+			<p id="axis"></p>
+				<button id="symlinebutton" onclick="symLine()">Display Axis of Symmetry</button>
+			<p id="discriminant"></p>
+			<p class="zeroes"></p>
+				<button id="answerbutton" onclick="plotxint()">Display Zeroes</button>
+			<p id="yint"></p>
+				<button id="plotyintbutton" onclick="plotyint()">Display Y-Intercept</button>
+		</div>
+
+		<canvas id="mycanvas"></canvas>
+		<br>
+			<div>
+				<button id="clear" onclick="newGraph()">Reset Grid</button>
+				<button id="gridbutton" onclick="xsGrid()">XS Grid</button>
+				<button id="gridbutton" onclick="smallGrid()">Small Grid</button>
+				<button id="gridbutton" onclick="mediumGrid()">Medium Grid</button>
+				<button id="gridbutton" onclick="largeGrid()">Large Grid</button>
+				<button id="gridbutton" onclick="xlGrid()">XXXXL Grid</button>
+
+				<div id="cubicwrapper">
+					<div id="coeff">
+						<h3> Cubic Grapher </h3>
+						<p class="formInfo">Enter your coefficients here:<br><br>
+							a = <input size="10" type="text" id="quadA" value="1"> <br>
+							b = <input size="10" type="text" id="linB" value="0"> <br>
+							c = <input size="10" type="text" id="constant" value="0"> <br>
+							d = <input size="10" type="text" id="constantcubic" value="0"> <br>
+							<br>
+							<button id="submitvalues" onclick="cubicQF()">Submit Values</button>
+							<button id="submitvalues" onclick="cubicsubmitandreset()">Reset Grid and Submit Values</button>
+						</p>
+					</div>
+					<br>
+					<br>
+					<br>
+					<div id="cubicanswers">
+						<p id="yint"></p>
+						<button id="plotyintbutton" onclick="cubicplotyint()">Display Y-Intercept</button>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</body>
+	</html>
